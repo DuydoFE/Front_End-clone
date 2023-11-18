@@ -45,11 +45,11 @@ const ModalMajor = ({ isOpen, setModal, onSuccess, onOk, majorSelect }: ModalMaj
   const handleOk = async () => {
     try {
       if ((majorSelect ?? []).length > 0) {
-        await api.deleteUserMajor(user?.id, major ?? [])
+        await api.deleteUserMajor(user?.id ?? 0, major ?? [])
       }
       await api.createdUserMajor({
         majorID: major ?? [],
-        userID: user?.id
+        userID: user?.id ?? 0
       })
       onOk?.()
     } catch (e) {
