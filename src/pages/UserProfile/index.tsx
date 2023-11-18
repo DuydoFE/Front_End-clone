@@ -56,10 +56,10 @@ export default function UserProfile() {
       }
     }
   )
-  const { data: userMajor } = useRequest(
+  const { data: userMajor, refresh } = useRequest(
     async () => {
       const response = await api.getUserMajorbyID(Number(id ?? 0))
-      return { ...response }
+      return response
     },
     {
       onBefore() {
@@ -73,7 +73,6 @@ export default function UserProfile() {
       }
     }
   )
-  console.log(userMajor)
 
   const { data: posts } = useRequest(
     async () => {
@@ -311,7 +310,7 @@ export default function UserProfile() {
                   </div>
                 </Flex>
                 <Flex gap={100} align='center'>
-                  <Typography.Text>Major : {userMajor?.majorName}</Typography.Text>
+                  <Typography.Text>Major : {userMajor?.map((item) => item.majorName)}</Typography.Text>
                 </Flex>
               </Flex>
             </div>
@@ -370,11 +369,15 @@ export default function UserProfile() {
         <ModalMajor
           idPost={idPost}
           isOpen={openReport}
+          majorSelect={userMajor?.map((major) => major.id)}
           setModal={(value) => {
             if (!value) {
               setIdPost(undefined)
             }
             setOpenReport(value)
+          }}
+          onOk={() => {
+            refresh()
           }}
         />
       </Spin>

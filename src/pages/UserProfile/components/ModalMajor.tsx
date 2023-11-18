@@ -13,10 +13,14 @@ interface ModalMajorProps {
   idPost?: number | null
   onSuccess?: () => void
   onGetCategories?: (data: string[] | string | number | number[]) => void
+  onOk?: () => void
+  onCancel?: () => void
+  majorSelect?: any[]
 }
 
-const ModalMajor = ({ isOpen, setModal, idPost, onSuccess, onGetCategories }: ModalMajorProps) => {
+const ModalMajor = ({ isOpen, setModal, onSuccess, onOk, majorSelect }: ModalMajorProps) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen)
+  const [major, setMajor] = useState<any[]>()
   const [form] = Form.useForm()
   const { user } = useSelector((state: RootState) => state.userReducer)
 
@@ -38,8 +42,19 @@ const ModalMajor = ({ isOpen, setModal, idPost, onSuccess, onGetCategories }: Mo
     setIsModalOpen(isOpen)
   }, [isOpen])
 
-  const handleOk = () => {
-    form.submit()
+  const handleOk = async () => {
+    try {
+      if ((majorSelect ?? []).length > 0) {
+        await api.deleteUserMajor(user?.id, major ?? [])
+      }
+      await api.createdUserMajor({
+        majorID: major ?? [],
+        userID: user?.id
+      })
+      onOk?.()
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const handleCancel = () => {
@@ -47,7 +62,12 @@ const ModalMajor = ({ isOpen, setModal, idPost, onSuccess, onGetCategories }: Mo
     onSuccess?.()
     setIsModalOpen(false)
     setModal?.(false)
+    setMajor([])
   }
+
+  useEffect(() => {
+    setMajor(majorSelect)
+  }, [majorSelect])
 
   return (
     <Spin>
@@ -57,8 +77,9 @@ const ModalMajor = ({ isOpen, setModal, idPost, onSuccess, onGetCategories }: Mo
           placeHolder='Select Major'
           optionData={categoriesData}
           onChange={(value) => {
-            onGetCategories?.(value)
+            setMajor(value)
           }}
+          value={major}
         />
       </Modal>
     </Spin>

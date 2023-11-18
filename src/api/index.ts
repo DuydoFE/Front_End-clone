@@ -96,7 +96,7 @@ const api = {
   },
 
   //user
-  getUserById(userID: number){
+  getUserById(userID: number) {
     const url = `User/${userID}`
     return axiosClient.get<unknown, User>(url)
   },
@@ -157,17 +157,24 @@ const api = {
       }
     })
   },
-  createdUserMajor ({userID, majorID}: {userID:number ; majorID:number}){
-  const url = `User/${userID}/major`
-  return axiosClient.post(url, {
-    params: {
-      userID,
-      majorID
-    }
-
-  })
+  createdUserMajor({ userID, majorID }: { userID: number; majorID: number[] }) {
+    const url = `User/${userID}/major`
+    return axiosClient.post(url, {
+      params: {
+        userID,
+        majorID
+      }
+    })
   },
- 
+
+  deleteUserMajor(userID: number, majorID: number[]) {
+    const url = `User/${userID}/major`
+    return axiosClient.delete(url, {
+      params: {
+        majorID
+      }
+    })
+  },
 
   reportPost({ reporterID, postID, content }: { reporterID: number; postID: number; content: string }) {
     const url = 'ReportPost'
