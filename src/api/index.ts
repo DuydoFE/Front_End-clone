@@ -159,7 +159,7 @@ const api = {
   },
   createdUserMajor({ userID, majorID }: { userID: number; majorID: number[] }) {
     const url = `User/${userID}/major`
-    return axiosClient.post(url, {
+    return axiosClient.post(url, null, {
       params: {
         userID,
         majorID
