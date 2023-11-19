@@ -44,19 +44,6 @@ const ModalMajor = ({ isOpen, setModal, onSuccess, onOk, majorSelect }: ModalMaj
 
   const handleOk = async () => {
     try {
-      if ((majorSelect ?? []).length > 0) {
-        if (major?.length ?? 0 > 0) {
-          await api.deleteUserMajor(user?.id ?? 0, major ?? [])
-        } else {
-          await api.deleteUserMajor(user?.id ?? 0, majorSelect ?? [])
-        }
-      }
-      if (major?.length ?? 0 > 0) {
-        await api.createdUserMajor({
-          majorID: major ?? [],
-          userID: user?.id ?? 0
-        })
-      }
       onOk?.()
     } catch (e) {
       console.error(e)
