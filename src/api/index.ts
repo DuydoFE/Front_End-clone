@@ -166,6 +166,15 @@ const api = {
       }
     })
   },
+  deleteUserMajor(userID: number, majorID: number[]) {
+    const url = `User/${userID}/major`
+    return axiosClient.delete(url, {
+      params: {
+        majorID
+      }
+    })
+  },
+
 
 
   reportPost({ reporterID, postID, content }: { reporterID: number; postID: number; content: string }) {
