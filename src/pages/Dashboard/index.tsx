@@ -192,6 +192,8 @@ export default function Dashboard() {
   )
   const data = !postFilter ? postData : postFilter
 
+  console.log(idPost)
+
   return (
     <BaseLayout
       showSearch
@@ -354,6 +356,9 @@ export default function Dashboard() {
             setIdPost(undefined)
           }
           setOpenComment(value)
+        }}
+        onClose={() => {
+          setIdPost(undefined)
         }}
       />
       <ModalReport

@@ -11,9 +11,10 @@ interface ModalCommentProps {
   isOpen: boolean
   setModal?: (value: boolean) => void
   idPost?: number
+  onClose?: () => void
 }
 
-const ModalComment = ({ isOpen, setModal, idPost }: ModalCommentProps) => {
+const ModalComment = ({ isOpen, setModal, idPost, onClose }: ModalCommentProps) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen)
   const [form] = Form.useForm()
   const { user } = useSelector((state: RootState) => state.userReducer)
@@ -65,6 +66,7 @@ const ModalComment = ({ isOpen, setModal, idPost }: ModalCommentProps) => {
     form.resetFields()
     setIsModalOpen(false)
     setModal?.(false)
+    onClose?.()
   }
 
   const onFinish = (value: { comment: string }) => {
