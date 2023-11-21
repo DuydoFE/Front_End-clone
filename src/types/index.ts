@@ -21,6 +21,7 @@ export type Post = {
   isApproved: boolean
   status: boolean
   user?: User
+  vote: number
 }
 
 export type PendingPost = {
@@ -40,6 +41,7 @@ export type PendingPost = {
   upvotes?: number
   upvote?: number
   downvote?: number
+  vote: number
 }
 
 export type PostByUserId = {

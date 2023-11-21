@@ -295,11 +295,11 @@ export default function Dashboard() {
                     : [
                         <div key={1} className='flex items-center'>
                           <Vote
-                            vote={Number(post?.upvotes ?? 0)}
+                            vote={Number(post?.vote ?? 0)}
                             postId={post.id}
                             userId={user?.id}
                             downvote={post.downvote}
-                            upvote={post.upvote}
+                            upvote={post.upvotes}
                             onVoteSuccess={() => {
                               refresh()
                             }}
