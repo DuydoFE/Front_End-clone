@@ -7,32 +7,29 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import SelectLabel from '@/components/SelectLabel'
 
-interface ModalMajorProps {
+interface ModalSubjectProps {
   isOpen: boolean
   setModal?: (value: boolean) => void
   idPost?: number | null
   onSuccess?: () => void
-  onGetMajors?: (data: string[] | string | number | number[]) => void
+  onGetSubjects?: (data: string[] | string | number | number[]) => void
   onOk?: () => void
   onCancel?: () => void
-  majorSelect?: any[]
+  subjectSelect?: any[]
 }
 
-const ModalMajor = ({ isOpen, setModal, onSuccess, onOk, majorSelect }: ModalMajorProps) => {
+const ModalSubject = ({ isOpen, setModal, onSuccess, onOk, subjectSelect }: ModalSubjectProps) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen)
-  const [major, setMajor] = useState<any[]>()
+  const [subject, setSubject] = useState<any[]>()
   const [form] = Form.useForm()
   const { user } = useSelector((state: RootState) => state.userReducer)
 
-  const { data: majorsData } = useRequest(async () => {
+  const { data: subjectsData } = useRequest(async () => {
     try {
-      const res = await api.getAllMajor()
-      // Filter all major, expect Only Student
-      const filter = res.filter((item) => item.majorName !== 'Only Students')
-
-      return filter.map((item) => {
+      const res = await api.getAllSubject()
+      return res.map((item) => {
         return {
-          label: item.majorName,
+          label: item.subjectName,
           value: item.id
         }
       })
@@ -47,16 +44,16 @@ const ModalMajor = ({ isOpen, setModal, onSuccess, onOk, majorSelect }: ModalMaj
 
   const handleOk = async () => {
     try {
-      if ((majorSelect ?? []).length > 0) {
-        if (major?.length ?? 0 > 0) {
-          await api.deleteUserMajor(user?.id ?? 0, major ?? [])
+      if ((subjectSelect ?? []).length > 0) {
+        if (subject?.length ?? 0 > 0) {
+          await api.deleteUserSubject(user?.id ?? 0, subject ?? [])
         } else {
-          await api.deleteUserMajor(user?.id ?? 0, majorSelect ?? [])
+          await api.deleteUserSubject(user?.id ?? 0, subjectSelect ?? [])
         }
       }
-      if (major?.length ?? 0 > 0) {
-        await api.createdUserMajor({
-          majorID: major ?? [],
+      if (subject?.length ?? 0 > 0) {
+        await api.createdUserSubject({
+          subjectID: subject ?? [],
           userID: user?.id ?? 0
         })
       }
@@ -71,28 +68,28 @@ const ModalMajor = ({ isOpen, setModal, onSuccess, onOk, majorSelect }: ModalMaj
     onSuccess?.()
     setIsModalOpen(false)
     setModal?.(false)
-    setMajor([])
+    setSubject([])
   }
 
   useEffect(() => {
-    setMajor(majorSelect)
-  }, [majorSelect])
+    setSubject(subjectSelect)
+  }, [subjectSelect])
 
   return (
     <Spin>
       <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         <SelectLabel
-          label='Major'
-          placeHolder='Select Major'
-          optionData={majorsData}
+          label='Subject'
+          placeHolder='Select Subject'
+          optionData={subjectsData}
           onChange={(value) => {
-            setMajor(value as number[])
+            setSubject(value as number[])
           }}
-          value={major}
+          value={subject}
         />
       </Modal>
     </Spin>
   )
 }
 
-export default ModalMajor
+export default ModalSubject

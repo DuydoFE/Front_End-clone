@@ -14,10 +14,10 @@ import { useParams } from 'react-router-dom'
 import ModalListUsers from './components/ModalListUsers'
 import { User } from '@/types'
 import SubSide from '../Dashboard/components/SubSide'
-import IconReport from '@/assets/images/svg/IconReport'
 import { UserAddOutlined } from '@ant-design/icons'
 
 import ModalMajor from './components/ModalMajor'
+import ModalSubject from './components/ModalSubject'
 
 export default function UserProfile() {
   const [loading, setLoading] = useState(false)
@@ -25,9 +25,9 @@ export default function UserProfile() {
   const [titleModal, setTitleModal] = useState('Followers')
   const [users, setUsers] = useState<User[]>([])
   const [modal, contextHolder] = Modal.useModal()
-  const [openPost, setOpenPost] = useState(false)
   const [idPost, setIdPost] = useState<undefined | number>(undefined)
   const [openReport, setOpenReport] = useState(false)
+  const [openSubject, setOpenSubject] = useState(false)
   const isDarkMode = useSelector((state: RootState) => state.themeReducer.darkMode)
 
   // const navigate = useNavigate()
@@ -59,6 +59,23 @@ export default function UserProfile() {
   const { data: userMajor, refresh } = useRequest(
     async () => {
       const response = await api.getUserMajorbyID(Number(id ?? 0))
+      return response
+    },
+    {
+      onBefore() {
+        setLoading(true)
+      },
+      onFinally() {
+        setLoading(false)
+      },
+      onError(e) {
+        console.error(e)
+      }
+    }
+  )
+  const { data: userSubject, refresh: getUserSubjectbyID } = useRequest(
+    async () => {
+      const response = await api.getUserSubjectbyID(Number(id ?? 0))
       return response
     },
     {
@@ -153,7 +170,7 @@ export default function UserProfile() {
   //   }
   // )
 
-  // const optionsTag: SelectProps['options'] = [
+  // const optionsSubject: SelectProps['options'] = [
   //   {
   //     label: 'Option 1',
   //     value: 1
@@ -168,17 +185,17 @@ export default function UserProfile() {
   //   }
   // ]
 
-  // const optionsCategory: SelectProps['options'] = [
+  // const optionsMajor: SelectProps['options'] = [
   //   {
-  //     label: 'Category 1',
+  //     label: 'Major 1',
   //     value: 1
   //   },
   //   {
-  //     label: 'Category 2',
+  //     label: 'Major 2',
   //     value: 2
   //   },
   //   {
-  //     label: 'Category 3',
+  //     label: 'Major 3',
   //     value: 3
   //   }
   // ]
@@ -299,18 +316,26 @@ export default function UserProfile() {
                   >
                     {following?.length ?? 0} Following
                   </Typography.Text>
-                  <div key={4} className='flex justify-end'>
-                    <div
-                      onClick={() => {
-                        setOpenReport(true)
-                      }}
-                    >
-                      <UserAddOutlined color={isDarkMode ? '#fff' : '#000'} />
-                    </div>
-                  </div>
                 </Flex>
                 <Flex gap={100} align='center'>
+                  <div
+                    onClick={() => {
+                      setOpenReport(true)
+                    }}
+                  >
+                    <UserAddOutlined color={isDarkMode ? '#fff' : '#000'} />
+                  </div>
                   <Typography.Text>Major : {userMajor?.map((item) => item.majorName)}</Typography.Text>
+                </Flex>
+                <Flex gap={100} align='center'>
+                  <div
+                    onClick={() => {
+                      setOpenSubject(true)
+                    }}
+                  >
+                    <UserAddOutlined color={isDarkMode ? '#fff' : '#000'} />
+                  </div>
+                  <Typography.Text>Subject : {userSubject?.map((item) => item.subjectName)}</Typography.Text>
                 </Flex>
               </Flex>
             </div>
@@ -378,6 +403,20 @@ export default function UserProfile() {
           }}
           onOk={() => {
             refresh()
+          }}
+        />
+        <ModalSubject
+          idPost={idPost}
+          isOpen={openSubject}
+          subjectSelect={userSubject?.map((subject) => subject.id)}
+          setModal={(value) => {
+            if (!value) {
+              setIdPost(undefined)
+            }
+            setOpenSubject(value)
+          }}
+          onOk={() => {
+            getUserSubjectbyID()
           }}
         />
       </Spin>
