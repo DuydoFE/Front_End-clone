@@ -3,18 +3,17 @@ import BaseLayout from '@/components/BaseLayout'
 import Card from '@/components/Card'
 import { RootState } from '@/store'
 
+import { User } from '@/types'
 import { getLocalStorage } from '@/utils/helpers'
-import { CheckCircleFilled, MoreOutlined } from '@ant-design/icons'
+import { CheckCircleFilled, MoreOutlined, UserAddOutlined } from '@ant-design/icons'
 import { useRequest } from 'ahooks'
 import { Avatar, Button, Dropdown, Flex, Image, MenuProps, Modal, Space, Spin, Typography, message } from 'antd'
 import dayjs from 'dayjs'
 import { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import ModalListUsers from './components/ModalListUsers'
-import { User } from '@/types'
 import SubSide from '../Dashboard/components/SubSide'
-import { UserAddOutlined } from '@ant-design/icons'
+import ModalListUsers from './components/ModalListUsers'
 
 import ModalMajor from './components/ModalMajor'
 import ModalSubject from './components/ModalSubject'
@@ -418,6 +417,7 @@ export default function UserProfile() {
           onOk={() => {
             getUserSubjectbyID()
           }}
+          majorId={[2, 3]}
         />
       </Spin>
       {contextHolder}

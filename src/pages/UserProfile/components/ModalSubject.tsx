@@ -2,7 +2,6 @@ import api from '@/api'
 import { RootState } from '@/store'
 import { useRequest } from 'ahooks'
 import { Form, Modal, Spin } from 'antd'
-
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import SelectLabel from '@/components/SelectLabel'
@@ -11,30 +10,34 @@ interface ModalSubjectProps {
   isOpen: boolean
   setModal?: (value: boolean) => void
   idPost?: number | null
+  majorId?: number | number[] | null
   onSuccess?: () => void
-  onGetSubjects?: (data: string[] | string | number | number[]) => void
   onOk?: () => void
   onCancel?: () => void
   subjectSelect?: any[]
 }
 
-const ModalSubject = ({ isOpen, setModal, onSuccess, onOk, subjectSelect }: ModalSubjectProps) => {
+const ModalSubject = ({ isOpen, setModal, majorId, idPost, onSuccess, onOk, subjectSelect }: ModalSubjectProps) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen)
-  const [subject, setSubject] = useState<any[]>()
+  const [subject, setSubject] = useState<any[]>([])
   const [form] = Form.useForm()
   const { user } = useSelector((state: RootState) => state.userReducer)
 
   const { data: subjectsData } = useRequest(async () => {
     try {
-      const res = await api.getAllSubject()
-      return res.map((item) => {
-        return {
-          label: item.subjectName,
-          value: item.id
-        }
-      })
+      const res = await api.getAllMajor()
+      const filteredSubjects = res
+        .filter((major) => (Array.isArray(majorId) ? majorId.includes(major.id) : major.id === majorId))
+        .flatMap((major) =>
+          major.subjects.map((item) => ({
+            label: item.subjectName,
+            value: item.id
+          }))
+        )
+      return filteredSubjects
     } catch (error) {
       console.log(error)
+      return []
     }
   })
 
@@ -45,15 +48,11 @@ const ModalSubject = ({ isOpen, setModal, onSuccess, onOk, subjectSelect }: Moda
   const handleOk = async () => {
     try {
       if ((subjectSelect ?? []).length > 0) {
-        if (subject?.length ?? 0 > 0) {
-          await api.deleteUserSubject(user?.id ?? 0, subject ?? [])
-        } else {
-          await api.deleteUserSubject(user?.id ?? 0, subjectSelect ?? [])
-        }
+        await api.deleteUserSubject(user?.id ?? 0, subjectSelect ?? [])
       }
-      if (subject?.length ?? 0 > 0) {
+      if (subject.length > 0) {
         await api.createdUserSubject({
-          subjectID: subject ?? [],
+          subjectID: subject.map((item) => item.value),
           userID: user?.id ?? 0
         })
       }
