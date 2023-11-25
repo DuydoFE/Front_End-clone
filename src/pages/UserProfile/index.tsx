@@ -417,7 +417,7 @@ export default function UserProfile() {
           onOk={() => {
             getUserSubjectbyID()
           }}
-          majorId={[2, 3]}
+          majorIds={userMajor?.map((major) => major.id)}
         />
       </Spin>
       {contextHolder}

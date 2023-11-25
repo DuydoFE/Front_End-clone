@@ -10,36 +10,45 @@ interface ModalSubjectProps {
   isOpen: boolean
   setModal?: (value: boolean) => void
   idPost?: number | null
-  majorId?: number | number[] | null
+  majorIds?: number | number[] | undefined
   onSuccess?: () => void
   onOk?: () => void
   onCancel?: () => void
   subjectSelect?: any[]
 }
 
-const ModalSubject = ({ isOpen, setModal, majorId, idPost, onSuccess, onOk, subjectSelect }: ModalSubjectProps) => {
+const ModalSubject = ({ isOpen, setModal, majorIds, idPost, onSuccess, onOk, subjectSelect }: ModalSubjectProps) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen)
   const [subject, setSubject] = useState<any[]>([])
+  const [optionDatas, setOptionDatas] = useState<any[]>([])
   const [form] = Form.useForm()
   const { user } = useSelector((state: RootState) => state.userReducer)
 
   const { data: subjectsData } = useRequest(async () => {
     try {
       const res = await api.getAllMajor()
-      const filteredSubjects = res
-        .filter((major) => (Array.isArray(majorId) ? majorId.includes(major.id) : major.id === majorId))
+      return res
+    } catch (error) {
+      console.log(error)
+      return []
+    }
+  })
+
+  useEffect(() => {
+    // Filter the data when majorIds changes
+    if (subjectsData && subjectsData.length > 0) {
+      const filteredSubjects = subjectsData
+        .filter((major) => (Array.isArray(majorIds) ? majorIds.includes(major.id) : major.id === majorIds))
         .flatMap((major) =>
           major.subjects.map((item) => ({
             label: item.subjectName,
             value: item.id
           }))
         )
-      return filteredSubjects
-    } catch (error) {
-      console.log(error)
-      return []
+
+      setOptionDatas(filteredSubjects)
     }
-  })
+  }, [subjectsData, majorIds])
 
   useEffect(() => {
     setIsModalOpen(isOpen)
@@ -80,7 +89,7 @@ const ModalSubject = ({ isOpen, setModal, majorId, idPost, onSuccess, onOk, subj
         <SelectLabel
           label='Subject'
           placeHolder='Select Subject'
-          optionData={subjectsData}
+          optionData={optionDatas}
           onChange={(value) => {
             setSubject(value as number[])
           }}
